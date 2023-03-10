@@ -1,0 +1,101 @@
+@startuml
+skinparam shadowing false
+left to right direction
+hide empty members
+
+package bankAccount{
+  package events{
+    class AddressUpdatedEvent
+    class BankAccountCreatedEvent
+    class BalanceDepositedEvent
+    class EmailChangedEvent
+  }
+  package domain{
+    class BankAccountAggregate
+    class BankAccountDocument
+  }
+  package commands{
+    class BankAccountCommandHandler
+    interface BankAccountCommandService
+  }
+  package repository{
+    class BankAccountMongoPanacheRepository
+  }
+  package dto{
+    class BankAccountResponseDTO
+    class ChangeEmailRequestDTO
+    class ChangeAddressRequestDTO
+    class CreateBankAccountRequestDTO
+    class DepositBalanceRequestDTO
+  }
+  package exceptions{
+    class BankAccountNotFoundException
+  }
+  package mongoProjection{
+    class BankAccountMongoProjection
+  }
+  package queries{
+    class BankAccountQueryHandler
+    interface BankAccountQueryService
+    class FindAllByBalanceQuery
+    class GetBankAccountByIDQuery
+  }
+  package delivery{
+    class BankAccountResource
+  }
+}
+
+package configuration{
+  class SwaggerOpenAPIConfiguration
+  class MongoConfiguration
+}
+
+package constants{
+  class Constants
+}
+
+package es{
+  class AggregateRoot
+  abstract class BaseEvent
+  class Constants
+  interface Command
+  class Event
+  interface EventBus
+  class EventSourcingUtils
+  class EventStore
+  interface EventStoreDB
+  class KafkaEventBus
+  interface Projection
+  class SerializerUtils
+  class Snapshot
+  package exceptions{
+    class InvalidEventException
+    class InvalidEventTypeException
+  }
+}
+package exceptions{
+  class ExceptionResponseDTO
+  class ExecutionTimeoutException
+  class InternalServerErrorException
+}
+
+package filters{
+  class BankAccountExceptionMappers
+  class LoggingFilter
+}
+
+package mappers{
+  class BankAccountMapper
+}
+
+BaseEvent <|-- AddressUpdatedEvent
+AggregateRoot <|--- BankAccountAggregate
+BaseEvent <|-- BankAccountCreatedEvent
+BaseEvent <|-- BalanceDepositedEvent
+BankAccountQueryService <|.. BankAccountQueryHandler
+EventStoreDB <|.. EventStore
+EventBus <|.. KafkaEventBus
+BaseEvent <|-- EmailChangedEvent
+Projection <|.. BankAccountMongoProjection
+BankAccountCommandService <|.. BankAccountCommandHandler
+@enduml

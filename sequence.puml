@@ -1,0 +1,37 @@
+@startuml
+actor "User" as user
+participant "BankAccount\nResource" as controller
+participant "BankAccount\nCommandService" as service
+participant "BankAccount\nAggregate" as aggregate
+participant "BankAccountMongo\nProjection" as projection
+participant "BankAccountMongo\nPanacheRepository" as repository
+participant "Event\nStoreDB" as eventstore
+
+database "PostgreSQL" as postgres
+database "MongoDB" as mongodb
+database "Kafka" as kafka
+
+user -> controller++ : POST\n/api/v1/bank
+controller -> service++ : handle(command)
+service -> aggregate++ : createBank\nAccount(command)
+' aggregate -> aggregate : apply(event)
+service <-- aggregate-- : bankAccount\nAggregate
+service -> service : create event
+service -> eventstore++ : apply(bankAccountEvent)
+eventstore -> postgres++ : insert event
+eventstore <-- postgres-- : void
+eventstore -> kafka++ : publish(event)
+service <-- eventstore-- : void
+controller <-- service-- : aggregateId
+user <-- controller-- : 201 Created
+projection <-- kafka--++ : process(event)
+projection -> eventstore++ : load(aggregateId)
+eventstore -> postgres++ : select event
+eventstore <-- postgres-- : event
+eventstore -> eventstore : build(event)
+eventstore -> projection-- : bankAccountAggregate
+projection -> repository++ : persist\n(bankAccountAggregate)
+repository -> mongodb++ : save(bankAccountAggregate)
+repository <-- mongodb-- : void
+projection <-- repository-- : void
+@enduml

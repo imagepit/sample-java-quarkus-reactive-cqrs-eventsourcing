@@ -1,0 +1,100 @@
+@startuml
+skinparam shadowing false
+left to right direction
+hide empty members
+class bankAccount.events.AddressUpdatedEvent {
+}
+abstract class es.AggregateRoot {
+}
+class exceptions.InternalServerErrorException {
+}
+class es.Snapshot {
+}
+class bankAccount.domain.BankAccountAggregate {
+}
+class es.exceptions.InvalidEventTypeException {
+}
+class bankAccount.repository.BankAccountMongoPanacheRepository {
+}
+class bankAccount.events.BankAccountCreatedEvent {
+}
+interface es.EventStoreDB {
+}
+class mappers.BankAccountMapper {
+}
+interface es.Projection {
+}
+class configuration.SwaggerOpenAPIConfiguration {
+}
+class bankAccount.domain.BankAccountDocument {
+}
+class es.SerializerUtils {
+}
+class bankAccount.events.BalanceDepositedEvent {
+}
+class bankAccount.exceptions.BankAccountNotFoundException {
+}
+interface es.Command {
+}
+class es.Event {
+}
+class constants.Constants {
+}
+class bankAccount.queries.BankAccountQueryHandler {
+}
+abstract class es.BaseEvent {
+}
+interface bankAccount.queries.BankAccountQueryService {
+}
+class es.Constants {
+}
+class es.exceptions.InvalidEventException {
+}
+class es.EventSourcingUtils {
+}
+class es.EventStore {
+}
+class es.KafkaEventBus {
+}
+class bankAccount.events.EmailChangedEvent {
+}
+class bankAccount.mongoProjection.BankAccountMongoProjection {
+}
+class configuration.MongoConfiguration {
+}
+class bankAccount.delivery.BankAccountResource {
+}
+class filters.BankAccountExceptionMappers {
+}
+class filters.LoggingFilter {
+}
+class bankAccount.commands.BankAccountCommandHandler {
+}
+interface bankAccount.commands.BankAccountCommandService {
+}
+class exceptions.ExecutionTimeoutException {
+}
+interface es.EventBus {
+}
+
+
+es.BaseEvent <|-- bankAccount.events.AddressUpdatedEvent
+exceptions.RuntimeException <|-- exceptions.InternalServerErrorException
+es.AggregateRoot <|-- bankAccount.domain.BankAccountAggregate
+es.exceptions.RuntimeException <|-- es.exceptions.InvalidEventTypeException
+io.quarkus.mongodb.panache.reactive.ReactivePanacheMongoRepository <|.. bankAccount.repository.BankAccountMongoPanacheRepository
+es.BaseEvent <|-- bankAccount.events.BankAccountCreatedEvent
+javax.ws.rs.core.Application <|-- configuration.SwaggerOpenAPIConfiguration
+es.BaseEvent <|-- bankAccount.events.BalanceDepositedEvent
+bankAccount.exceptions.RuntimeException <|-- bankAccount.exceptions.BankAccountNotFoundException
+bankAccount.queries.BankAccountQueryService <|.. bankAccount.queries.BankAccountQueryHandler
+es.exceptions.RuntimeException <|-- es.exceptions.InvalidEventException
+es.EventStoreDB <|.. es.EventStore
+es.EventBus <|.. es.KafkaEventBus
+es.BaseEvent <|-- bankAccount.events.EmailChangedEvent
+es.Projection <|.. bankAccount.mongoProjection.BankAccountMongoProjection
+javax.ws.rs.container.ContainerRequestFilter <|.. filters.LoggingFilter
+javax.ws.rs.container.ContainerResponseFilter <|.. filters.LoggingFilter
+bankAccount.commands.BankAccountCommandService <|.. bankAccount.commands.BankAccountCommandHandler
+exceptions.RuntimeException <|-- exceptions.ExecutionTimeoutException
+@enduml

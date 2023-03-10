@@ -1,0 +1,69 @@
+@startuml
+skinparam shadowing false
+actor "User" as user
+participant "User\nController" as controller
+participant "User\nService" as service
+participant "User\nEntity" as aggregate
+participant "Event\nSubscriber" as subscriber
+participant "UserQuery\nRepository" as repository
+participant "UserEvent\nRepository" as eventstore
+
+database "PostgreSQL" as postgres
+database "MongoDB" as mongodb
+database "Kafka" as kafka
+
+user -> controller++ : POST\n/api/v1/bank
+controller -> service++ : handle\n(command)
+service -> aggregate++ : createUser\n(command)
+aggregate -> aggregate : serialize
+aggregate -> aggregate : createEvent
+note right
+    イベントの型をBankAccountCreatedEventにする
+end note
+aggregate -> aggregate : applyEvent
+service <-- aggregate-- : User
+service -> eventstore++ : save(user)
+eventstore -> postgres++ : insert event
+eventstore <-- postgres-- : void
+eventstore -> kafka++ : publish(event)
+service <-- eventstore-- : void
+controller <-- service-- : aggregateId
+user <-- controller-- : 201 Created
+subscriber <-- kafka--++ : process(event)
+subscriber -> eventstore++ : load(aggregateId)
+eventstore -> postgres++ : select event
+eventstore <-- postgres-- : event
+eventstore -> subscriber-- : user
+subscriber -> repository++ : persist\n(user)
+repository -> mongodb++ : insert user
+repository <-- mongodb-- : void
+subscriber <-- repository-- : void
+@enduml
+
+@startuml
+skinparam shadowing false
+
+package "データベース : user_event_store" as target_system <<Database>> {
+    entity events {
+        + event_id uuid [PK]
+        ..
+        aggregate_id varchar(250)
+        aggregate_type varchar(250)
+        event_type varchar(250)
+        data BYTEA
+        metadata BYTEA
+        version SERIAL
+        timestamp TIMESTAMP
+    }
+    entity snapshots {
+        + snapshot_id uuid [PK]
+        ..
+        aggregate_id varchar(250)
+        aggregate_type varchar(250)
+        data BYTEA
+        metadata BYTEA
+        version SERIAL
+        timestamp TIMESTAMP
+    }
+}
+@enduml
